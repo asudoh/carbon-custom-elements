@@ -36,6 +36,12 @@ export enum TABLE_SIZE {
 @customElement(`${prefix}-table`)
 class BXTable extends LitElement {
   /**
+   * `true` if this table has a column for overflow menu. Corresponds to the attribute with the same name.
+   */
+  @property({ type: Boolean, reflect: true, attribute: 'has-overflow-menu' })
+  hasOverflowMenu = false;
+
+  /**
    * `true` if the the table should use the compact version of the UI. Corresponds to the attribute with the same name.
    */
   @property({ reflect: true })
@@ -46,6 +52,12 @@ class BXTable extends LitElement {
    */
   @property({ type: Boolean, reflect: true })
   sort = false;
+
+  /**
+   * `true` if the zebra stripe should be shown. Corresponds to the attribute with the same name.
+   */
+  @property({ type: Boolean, reflect: true })
+  zebra = false;
 
   connectedCallback() {
     if (!this.hasAttribute('role')) {
