@@ -53,12 +53,6 @@ class BXTable extends LitElement {
   @property({ type: Boolean, reflect: true })
   sort = false;
 
-  /**
-   * `true` if the zebra stripe should be shown. Corresponds to the attribute with the same name.
-   */
-  @property({ type: Boolean, reflect: true })
-  zebra = false;
-
   connectedCallback() {
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'table');

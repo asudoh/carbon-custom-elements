@@ -56,6 +56,12 @@ const BXTableHeaderCell = createReactCustomElementType('bx-table-header-cell', {
   },
 });
 
+const BXTableBody = createReactCustomElementType('bx-table-body', {
+  zebra: {
+    serialize: booleanSerializer,
+  },
+});
+
 const BXTableRow = createReactCustomElementType('bx-table-row', {
   selected: {
     serialize: booleanSerializer,
@@ -91,6 +97,7 @@ const BXCEDemoDataTable = ({
   rows: propRows,
   size,
   sortInfo: propSortInfo,
+  zebra,
   onChangeSelection,
   onChangeSelectionAll,
   onSort,
@@ -102,6 +109,7 @@ const BXCEDemoDataTable = ({
   rows: TDemoTableRow[];
   size?: TABLE_SIZE;
   sortInfo: TDemoSortInfo;
+  zebra?: boolean;
   onChangeSelection?: (event: CustomEvent) => void;
   onChangeSelectionAll?: (event: CustomEvent) => void;
   onSort?: (event: CustomEvent) => void;
@@ -212,7 +220,7 @@ const BXCEDemoDataTable = ({
           })}
         </BXTableHeaderRow>
       </bx-table-head>
-      <bx-table-body>
+      <BXTableBody zebra={zebra}>
         {sortedRows.map(row => {
           const { id: rowId, selected } = row;
           const selectionName = !hasSelection ? undefined : `__bx-ce-demo-data-table_${elementId}_${rowId}`;
@@ -230,7 +238,7 @@ const BXCEDemoDataTable = ({
             </BXTableRow>
           );
         })}
-      </bx-table-body>
+      </BXTableBody>
     </BXTable>
   );
 };
@@ -281,6 +289,11 @@ BXCEDemoDataTable.propTypes = {
   size: PropTypes.string,
 
   /**
+   * `true` if the zebra stripe should be shown.
+   */
+  zebra: PropTypes.bool,
+
+  /**
    * An event that fires when user changes selection of a row.
    */
   onChangeSelection: PropTypes.func,
@@ -314,6 +327,7 @@ const createProps = ({ sortable }: { sortable?: boolean } = {}) => {
   return {
     hasSelection,
     size: select('Table size (size)', sizes, TABLE_SIZE.REGULAR),
+    zebra: sortable && boolean('Supports zebra stripe (zebra in `<BXTableBody>`)', false),
     disableChangeSelection:
       hasSelection &&
       boolean(
@@ -373,7 +387,7 @@ storiesOf('Data table', module)
     );
   })
   .add('Sortable', () => {
-    const { hasSelection, size, disableChangeSelection, disableChangeSort } = createProps({ sortable: true });
+    const { hasSelection, size, zebra, disableChangeSelection, disableChangeSort } = createProps({ sortable: true });
     const beforeChangeSelectionAction = action('bx-table-row-change-selection');
     const beforeChangeSelectionAllAction = action('bx-table-change-selection-all');
     const beforeChangeSelectionHandler = (event: CustomEvent) => {
@@ -402,6 +416,7 @@ storiesOf('Data table', module)
           sortInfo={demoSortInfo}
           hasSelection={hasSelection}
           size={size}
+          zebra={zebra}
           onChangeSelection={beforeChangeSelectionHandler}
           onChangeSelectionAll={beforeChangeSelectionHandler}
           onSort={beforeChangeSortHandler}
