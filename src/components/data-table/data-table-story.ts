@@ -4,7 +4,6 @@ import { repeat } from 'lit-html/directives/repeat';
 import { storiesOf } from '@storybook/polymer';
 import { action } from '@storybook/addon-actions';
 import { withKnobs, boolean, select } from '@storybook/addon-knobs';
-import './data-table';
 import { TABLE_SIZE } from './table';
 import './table-head';
 import './table-header-row';
@@ -170,69 +169,65 @@ class BXCEDemoDataTable extends LitElement {
                 this._compare(lhs[sortColumnId!], rhs[sortColumnId!])
             );
     return html`
-      <bx-data-table
-        ?has-selection=${hasSelection}
+      <bx-table
+        size="${size}"
         @bx-table-row-change-selection=${this._handleChangeSelection}
         @bx-table-change-selection-all=${this._handleChangeSelectionAll}
         @bx-table-header-cell-sort=${this._handleChangeSort}
       >
-        <bx-table size="${size}">
-          <bx-table-head>
-            <bx-table-header-row
-              ?selected=${selectedAll}
-              selection-name=${ifDefined(selectionAllName)}
-              selection-value=${ifDefined(selectionAllName)}
-            >
-              ${repeat(
-                columns!,
-                ({ id: columnId }) => columnId,
-                ({ id: columnId, sortCycle, title }) => {
-                  const sortDirectionForThisCell =
-                    sortCycle && (columnId === sortColumnId ? sortDirection : TABLE_SORT_DIRECTION.NONE);
-                  return html`
-                    <bx-table-header-cell
-                      sort-cycle="${ifDefined(sortCycle)}"
-                      sort-direction="${ifDefined(sortDirectionForThisCell)}"
-                      data-column-id="${columnId}"
-                    >
-                      ${title}
-                    </bx-table-header-cell>
-                  `;
-                }
-              )}
-            </bx-table-header-row>
-          </bx-table-head>
-          <bx-table-body>
+        <bx-table-head>
+          <bx-table-header-row
+            ?selected=${selectedAll}
+            selection-name=${ifDefined(selectionAllName)}
+            selection-value=${ifDefined(selectionAllName)}
+          >
             ${repeat(
-              sortedRows,
-              ({ id: rowId }) => rowId,
-              row => {
-                const { id: rowId, selected } = row;
-                const selectionName = !hasSelection
-                  ? undefined
-                  : `__bx-ce-demo-data-table_${elementId || this._uniqueId}_${rowId}`;
-                const selectionValue = !hasSelection ? undefined : 'selected';
+              columns!,
+              ({ id: columnId }) => columnId,
+              ({ id: columnId, sortCycle, title }) => {
+                const sortDirectionForThisCell =
+                  sortCycle && (columnId === sortColumnId ? sortDirection : TABLE_SORT_DIRECTION.NONE);
                 return html`
-                  <bx-table-row
-                    ?selected=${hasSelection && selected}
-                    selection-name="${ifDefined(selectionName)}"
-                    selection-value="${ifDefined(selectionValue)}"
-                    data-row-id="${rowId}"
+                  <bx-table-header-cell
+                    sort-cycle="${ifDefined(sortCycle)}"
+                    sort-direction="${ifDefined(sortDirectionForThisCell)}"
+                    data-column-id="${columnId}"
                   >
-                    ${repeat(
-                      columns!,
-                      ({ id: columnId }) => columnId,
-                      ({ id: columnId }) => html`
-                        <bx-table-cell>${row[columnId]}</bx-table-cell>
-                      `
-                    )}
-                  </bx-table-row>
+                    ${title}
+                  </bx-table-header-cell>
                 `;
               }
             )}
-          </bx-table-body>
-        </bx-table>
-      </bx-data-table>
+          </bx-table-header-row>
+        </bx-table-head>
+        <bx-table-body>
+          ${repeat(
+            sortedRows,
+            ({ id: rowId }) => rowId,
+            row => {
+              const { id: rowId, selected } = row;
+              const selectionName = !hasSelection ? undefined : `__bx-ce-demo-data-table_${elementId || this._uniqueId}_${rowId}`;
+              const selectionValue = !hasSelection ? undefined : 'selected';
+              return html`
+                <bx-table-row
+                  ?selected=${hasSelection && selected}
+                  selection-name="${ifDefined(selectionName)}"
+                  selection-value="${ifDefined(selectionValue)}"
+                  data-row-id="${rowId}"
+                >
+                  ${repeat(
+                    columns!,
+                    ({ id: columnId }) => columnId,
+                    ({ id: columnId }) => html`
+                      <bx-table-cell>${row[columnId]}</bx-table-cell>
+                    `
+                  )}
+                </bx-table-row>
+              `;
+            }
+          )}
+        </bx-table-body>
+      </bx-table>
     `;
   }
 
@@ -275,46 +270,44 @@ storiesOf('Data table', module)
   .add('Default', () => {
     const { size } = createProps();
     return html`
-      <bx-data-table>
-        <bx-table size="${size}">
-          <bx-table-head>
-            <bx-table-header-row>
-              <bx-table-header-cell>Name</bx-table-header-cell>
-              <bx-table-header-cell>Protocol</bx-table-header-cell>
-              <bx-table-header-cell>Port</bx-table-header-cell>
-              <bx-table-header-cell>Rule</bx-table-header-cell>
-              <bx-table-header-cell>Attached Groups</bx-table-header-cell>
-              <bx-table-header-cell>Status</bx-table-header-cell>
-            </bx-table-header-row>
-          </bx-table-head>
-          <bx-table-body>
-            <bx-table-row>
-              <bx-table-cell>Load Balancer 1</bx-table-cell>
-              <bx-table-cell>HTTP</bx-table-cell>
-              <bx-table-cell>80</bx-table-cell>
-              <bx-table-cell>Round Robin</bx-table-cell>
-              <bx-table-cell>Maureen's VM Groups</bx-table-cell>
-              <bx-table-cell>Active</bx-table-cell>
-            </bx-table-row>
-            <bx-table-row>
-              <bx-table-cell>Load Balancer 2</bx-table-cell>
-              <bx-table-cell>HTTP</bx-table-cell>
-              <bx-table-cell>80</bx-table-cell>
-              <bx-table-cell>Round Robin</bx-table-cell>
-              <bx-table-cell>Maureen's VM Groups</bx-table-cell>
-              <bx-table-cell>Active</bx-table-cell>
-            </bx-table-row>
-            <bx-table-row>
-              <bx-table-cell>Load Balancer 3</bx-table-cell>
-              <bx-table-cell>HTTP</bx-table-cell>
-              <bx-table-cell>80</bx-table-cell>
-              <bx-table-cell>Round Robin</bx-table-cell>
-              <bx-table-cell>Maureen's VM Groups</bx-table-cell>
-              <bx-table-cell>Active</bx-table-cell>
-            </bx-table-row>
-          </bx-table-body>
-        </bx-table>
-      </bx-data-table>
+      <bx-table size="${size}">
+        <bx-table-head>
+          <bx-table-header-row>
+            <bx-table-header-cell>Name</bx-table-header-cell>
+            <bx-table-header-cell>Protocol</bx-table-header-cell>
+            <bx-table-header-cell>Port</bx-table-header-cell>
+            <bx-table-header-cell>Rule</bx-table-header-cell>
+            <bx-table-header-cell>Attached Groups</bx-table-header-cell>
+            <bx-table-header-cell>Status</bx-table-header-cell>
+          </bx-table-header-row>
+        </bx-table-head>
+        <bx-table-body>
+          <bx-table-row>
+            <bx-table-cell>Load Balancer 1</bx-table-cell>
+            <bx-table-cell>HTTP</bx-table-cell>
+            <bx-table-cell>80</bx-table-cell>
+            <bx-table-cell>Round Robin</bx-table-cell>
+            <bx-table-cell>Maureen's VM Groups</bx-table-cell>
+            <bx-table-cell>Active</bx-table-cell>
+          </bx-table-row>
+          <bx-table-row>
+            <bx-table-cell>Load Balancer 2</bx-table-cell>
+            <bx-table-cell>HTTP</bx-table-cell>
+            <bx-table-cell>80</bx-table-cell>
+            <bx-table-cell>Round Robin</bx-table-cell>
+            <bx-table-cell>Maureen's VM Groups</bx-table-cell>
+            <bx-table-cell>Active</bx-table-cell>
+          </bx-table-row>
+          <bx-table-row>
+            <bx-table-cell>Load Balancer 3</bx-table-cell>
+            <bx-table-cell>HTTP</bx-table-cell>
+            <bx-table-cell>80</bx-table-cell>
+            <bx-table-cell>Round Robin</bx-table-cell>
+            <bx-table-cell>Maureen's VM Groups</bx-table-cell>
+            <bx-table-cell>Active</bx-table-cell>
+          </bx-table-row>
+        </bx-table-body>
+      </bx-table>
     `;
   })
   .add('Sortable', () => {

@@ -2,7 +2,6 @@ import { Pipe, PipeTransform, Component, Input, HostBinding, CUSTOM_ELEMENTS_SCH
 import { storiesOf } from '@storybook/angular';
 import { action } from '@storybook/addon-actions';
 import { withKnobs, boolean, select } from '@storybook/addon-knobs/angular';
-import './data-table';
 import { TABLE_SIZE } from './table';
 import './table-head';
 import './table-header-row';
@@ -113,42 +112,40 @@ class BXCETableRowSelectionIdPipe implements PipeTransform {
 @Component({
   selector: 'bx-ce-demo-data-table',
   template: `
-    <bx-data-table
-      [hasSelection]="hasSelection"
+    <bx-table
+      [size]="size"
       (bx-table-row-change-selection)="_handleChangeSelection($event)"
       (bx-table-change-selection-all)="_handleChangeSelectionAll($event)"
       (bx-table-header-cell-sort)="_handleChangeSort($event)"
     >
-      <bx-table [size]="size">
-        <bx-table-head>
-          <bx-table-header-row
-            [selected]="_selectedAll"
-            [selectionName]="!hasSelection ? undefined : _selectionId"
-            [selectionValue]="!hasSelection ? undefined : _selectionId"
+      <bx-table-head>
+        <bx-table-header-row
+          [selected]="_selectedAll"
+          [selectionName]="!hasSelection ? undefined : _selectionId"
+          [selectionValue]="!hasSelection ? undefined : _selectionId"
+        >
+          <bx-table-header-cell
+            *ngFor="let column of columns"
+            [sortCycle]="column.sortCycle"
+            [sortDirection]="column | BXCETableColumnSortDirection: _sortInfo"
+            [attr.data-column-id]="column.id"
           >
-            <bx-table-header-cell
-              *ngFor="let column of columns"
-              [sortCycle]="column.sortCycle"
-              [sortDirection]="column | BXCETableColumnSortDirection: _sortInfo"
-              [attr.data-column-id]="column.id"
-            >
-              {{ column.title }}
-            </bx-table-header-cell>
-          </bx-table-header-row>
-        </bx-table-head>
-        <bx-table-body>
-          <bx-table-row
-            *ngFor="let row of _rows | BXCETableRowsSortWith: { compare: _compare, sortInfo: _sortInfo }"
-            [selected]="hasSelection && row.selected"
-            [selectionName]="!hasSelection ? undefined : (row.id | BXCETableRowSelectionId: _selectionId)"
-            [selectionValue]="!hasSelection ? undefined : 'selected'"
-            [attr.data-row-id]="row.id"
-          >
-            <bx-table-cell *ngFor="let column of columns">{{ row[column.id] }}</bx-table-cell>
-          </bx-table-row>
-        </bx-table-body>
-      </bx-table>
-    </bx-data-table>
+            {{ column.title }}
+          </bx-table-header-cell>
+        </bx-table-header-row>
+      </bx-table-head>
+      <bx-table-body>
+        <bx-table-row
+          *ngFor="let row of _rows | BXCETableRowsSortWith: { compare: _compare, sortInfo: _sortInfo }"
+          [selected]="hasSelection && row.selected"
+          [selectionName]="!hasSelection ? undefined : (row.id | BXCETableRowSelectionId: _selectionId)"
+          [selectionValue]="!hasSelection ? undefined : 'selected'"
+          [attr.data-row-id]="row.id"
+        >
+          <bx-table-cell *ngFor="let column of columns">{{ row[column.id] }}</bx-table-cell>
+        </bx-table-row>
+      </bx-table-body>
+    </bx-table>
   `,
 })
 class BXCEDemoDataTable {
@@ -334,7 +331,6 @@ storiesOf('Data table', module)
   .addDecorator(withKnobs)
   .add('Default', () => ({
     template: `
-      <bx-data-table>
         <bx-table [size]="size">
           <bx-table-head>
             <bx-table-header-row>
@@ -373,7 +369,6 @@ storiesOf('Data table', module)
             </bx-table-row>
           </bx-table-body>
         </bx-table>
-      </bx-data-table>
     `,
     props: createProps(),
     moduleMetadata: {

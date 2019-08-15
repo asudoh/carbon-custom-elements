@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { storiesOf } from '@storybook/angular';
 import { withKnobs, boolean, text } from '@storybook/addon-knobs/angular';
-import { Fade16Module } from '@carbon/icons-angular/lib/fade/16';
+import { Fade16Module } from '@carbon/icons-angular/umd/fade/16';
 import './side-nav';
 import './side-nav-items';
 import './side-nav-link';
