@@ -1,0 +1,3 @@
+:host(#{$prefix}-table-toolbar) ::slotted(#{$prefix}-table-toolbar-content) {
+  @extend .#{$prefix}--toolbar-content;
+}
