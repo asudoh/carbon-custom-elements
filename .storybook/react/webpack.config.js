@@ -1,40 +1,9 @@
 'use strict';
 
-const { readFile, writeFile } = require('fs');
 const path = require('path');
-const { promisify } = require('util');
-const mkdirp = require('mkdirp');
-const { transformAsync } = require('@babel/core');
-const babelPluginCreateReactCustomElementType = require('../../babel-plugin-create-react-custom-element-type');
 const configure = require('../webpack.config');
 
 const regexComponentsReactPath = /carbon-custom-elements[\\/]es[\\/]components-react[\\/](.*)$/;
-const readFileAsync = promisify(readFile);
-const writeFileAsync = promisify(writeFile);
-const mkdirpAsync = promisify(mkdirp);
-
-const buildCreateReactCustomElementTypeBabelOpts = {
-  babelrc: false,
-  plugins: [
-    ['@babel/plugin-syntax-decorators', { decoratorsBeforeExport: true }],
-    '@babel/plugin-syntax-typescript',
-    babelPluginCreateReactCustomElementType,
-  ],
-};
-
-/**
- * Generates React wrapper module for the given custom element module.
- * @param {string} dst The file path of the generated React wrapper module.
- * @param {string} src The file path of the custom element module.
- */
-const buildReactCustomElementTypeOnTheFly = async (dst, src) => {
-  await mkdirpAsync(path.dirname(dst));
-  const transformed = await transformAsync(await readFileAsync(src), {
-    ...buildCreateReactCustomElementTypeBabelOpts,
-    filename: src,
-  });
-  await writeFileAsync(dst, transformed.code);
-};
 
 class CreateReactCustomElementTypeProxyPlugin {
   /**
@@ -51,17 +20,11 @@ class CreateReactCustomElementTypeProxyPlugin {
     resolver.plugin(this.source, (request, callback) => {
       request.path = request.path.replace(/[\\/]es[\\/](components|globals)[\\/]/i, '/src/$1/');
       const tokens = regexComponentsReactPath.exec(request.path);
-      if (!tokens) {
-        // Bails if the request is not of the React wrapper module
-        callback();
-        return;
+      if (tokens) {
+        // Remaps the path to the one in our code if the request is of the React wrapper module
+        request.path = path.resolve(__dirname, '../../es/components-react', `${tokens[1]}.js`);
       }
-      const src = path.resolve(__dirname, '../../src/components', `${tokens[1]}.ts`);
-      const dst = path.resolve(__dirname, '../../es/components-react', `${tokens[1]}.js`);
-      buildReactCustomElementTypeOnTheFly(dst, src).then(() => {
-        request.path = dst;
-        callback();
-      }, callback);
+      callback();
     });
   }
 }
@@ -72,21 +35,27 @@ module.exports = ({ config, mode }) => {
     item => item.use && item.use.some && item.use.some(use => /babel-loader/i.test(use.loader))
   );
   if (babelLoaderRule) {
-    massagedConfig.module.rules.push({
-      test: /\.tsx$/,
-      use: babelLoaderRule.use.map(item => {
-        const { presets } = item.options || {};
-        return !presets || presets.indexOf('@babel/preset-react') >= 0
-          ? item
-          : {
-              ...item,
-              options: {
-                ...item.options,
-                presets: [...item.options.presets, '@babel/preset-react'],
-              },
-            };
-      }),
-    });
+    massagedConfig.module.rules.push(
+      {
+        test: /\.tsx$/,
+        use: babelLoaderRule.use.map(item => {
+          const { presets } = item.options || {};
+          return !presets || presets.indexOf('@babel/preset-react') >= 0
+            ? item
+            : {
+                ...item,
+                options: {
+                  ...item.options,
+                  presets: [...item.options.presets, '@babel/preset-react'],
+                },
+              };
+        }),
+      },
+      {
+        test: /[\\/]es[\\/]components-react[\\/]/i,
+        use: require.resolve('../../create-react-custom-element-type-loader'),
+      }
+    );
   }
   if (!massagedConfig.resolve.plugins) {
     massagedConfig.resolve.plugins = [];
