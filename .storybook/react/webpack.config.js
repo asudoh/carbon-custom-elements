@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const babelPluginCreateReactCustomElementType = require('../../babel-plugin-create-react-custom-element-type');
 const configure = require('../webpack.config');
 
 const regexComponentsReactPath = /carbon-custom-elements[\\/]es[\\/]components-react[\\/](.*)$/;
@@ -53,7 +54,24 @@ module.exports = ({ config, mode }) => {
       },
       {
         test: /[\\/]es[\\/]components-react[\\/]/i,
-        use: require.resolve('../../create-react-custom-element-type-loader'),
+        enforce: 'pre',
+        use: [require.resolve('../../react-custom-element-type-source-loader')],
+      },
+      {
+        test: /[\\/]es[\\/]components-react[\\/]/i,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              babelrc: false,
+              plugins: [
+                ['@babel/plugin-syntax-decorators', { decoratorsBeforeExport: true }],
+                '@babel/plugin-syntax-typescript',
+                babelPluginCreateReactCustomElementType,
+              ],
+            },
+          },
+        ],
       }
     );
   }
