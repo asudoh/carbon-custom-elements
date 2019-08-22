@@ -89,7 +89,13 @@ module.exports = {
             plugins: [
               ['@babel/plugin-syntax-decorators', { decoratorsBeforeExport: true }],
               '@babel/plugin-syntax-typescript',
-              babelPluginCreateReactCustomElementType,
+              [
+                babelPluginCreateReactCustomElementType,
+                {
+                  targetPathBase: path.resolve(__dirname, `../${config.jsDestDir}/components-react`),
+                  targetComponentsPathBase: path.resolve(__dirname, `../${config.jsDestDir}/components`),
+                },
+              ],
             ],
           })
         )

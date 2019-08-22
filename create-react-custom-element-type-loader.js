@@ -17,7 +17,6 @@ function reactCustomElementTypeSourceLoader() {
   const relativePath = path.relative(path.resolve(__dirname, 'es/components-react'), resourcePath);
   const src = path.resolve(__dirname, 'src/components', relativePath).replace(/\.js$/, '.ts');
   readFileAsync(src, 'utf8').then(contents => {
-    this.resourcePath = src; // Changes `resourcePath` so `babel-loader` sees it's loaded from `src`
     callback(null, contents);
   }, callback);
 }

@@ -7,7 +7,7 @@ const { default: transformTemplateLiterals } = require('@babel/plugin-transform-
 
 const regexEvent = /^event/;
 
-module.exports = function generateCreateReactCustomElementType(api) {
+module.exports = function generateCreateReactCustomElementType(api, { targetPathBase, targetComponentsPathBase }) {
   const { types: t } = api;
 
   /**
@@ -243,8 +243,17 @@ module.exports = function generateCreateReactCustomElementType(api) {
       // Gathers metadata of custom element properties and events, into `context`
       path.traverse(metadataVisitor, context);
 
-      const relativePath = relative(resolve(__dirname, 'src/components'), file.opts.filename);
-      const retargedPath = t.stringLiteral(`../../components/${join(dirname(relativePath), basename(relativePath, '.ts'))}`);
+      // if (targetPathBase && )
+      const { filename, filenameRelative = relative(targetPathBase, filename) } = file.opts;
+      const targetPath = resolve(targetPathBase, filenameRelative);
+      const targetComponentPath = resolve(targetComponentsPathBase, filenameRelative);
+      // const relativePathFromSrc = relative(resolve(__dirname, 'src/components'), filename);
+      // const relativePathFromES = relative(resolve(__dirname, 'es/components-react'), filename);
+      // const relativePath = !relativePathFromSrc.startsWith('..') ?
+      //   relative(resolve(__dirname, 'src/components'), filename) :
+      //   relative(resolve(__dirname, 'es/components'), filename);
+      const relativePath = relative(dirname(targetPath), targetComponentPath);
+      const componentPath = t.stringLiteral(join(dirname(relativePath), basename(relativePath, '.ts')));
 
       // Creates a module with `createReactCustomElementType()`
       // with the gathered metadata of custom element properties and events
@@ -268,7 +277,7 @@ module.exports = function generateCreateReactCustomElementType(api) {
           t.exportNamedDeclaration(
             null,
             [t.exportSpecifier(t.identifier('default'), t.identifier('CustomElement'))],
-            retargedPath
+            componentPath
           ),
           buildCreateReactCustomElementTypeImport(declaredProps),
           ...template.ast`
@@ -288,7 +297,7 @@ module.exports = function generateCreateReactCustomElementType(api) {
         );
       }
       if (context.hasNamedExport) {
-        body.unshift(t.exportAllDeclaration(retargedPath));
+        body.unshift(t.exportAllDeclaration(componentPath));
       }
       const program = t.program(body);
       traverse(program, transformTemplateLiterals(api).visitor, path.scope, path);
