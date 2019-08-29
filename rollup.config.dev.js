@@ -6,8 +6,10 @@ const { createFilter } = require('rollup-pluginutils');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const babel = require('rollup-plugin-babel');
 const commonjs = require('rollup-plugin-commonjs');
+const packageJson = require('./package.json');
 const svgResultCarbonIcon = require('./rollup-plugin-svg-result-carbon-icon');
 
+const peerDependencies = Object.keys(packageJson.peerDependencies || {});
 const readFile = promisify(fs.readFile);
 const scssFilter = createFilter('**/*.scss');
 
@@ -46,4 +48,5 @@ module.exports = {
     }),
     commonjs(),
   ],
+  external: id => !id.startsWith('@babel/runtime') && peerDependencies.some(dependency => id.startsWith(dependency)),
 };

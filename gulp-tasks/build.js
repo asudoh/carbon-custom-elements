@@ -2,7 +2,6 @@
 
 const path = require('path');
 const gulp = require('gulp');
-const gulpif = require('gulp-if');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const sass = require('gulp-sass');
@@ -54,7 +53,7 @@ module.exports = {
         .pipe(
           sass({
             includePaths: ['node_modules'],
-            outputStyle: !buildProd ? 'nested' : 'compressed',
+            outputStyle: 'compressed',
           }).on('error', sass.logError)
         )
         .pipe(
@@ -108,7 +107,7 @@ module.exports = {
           `!${config.srcDir}/index-with-polyfills.ts`,
         ])
         .pipe(plumber())
-        .pipe(gulpif(!buildProd, sourcemaps.init()))
+        .pipe(sourcemaps.init())
         .pipe(
           babel({
             presets: [
@@ -125,7 +124,7 @@ module.exports = {
           })
         )
         .on('error', log)
-        .pipe(gulpif(!buildProd, sourcemaps.write()))
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest(config.jsDestDir));
     },
 
@@ -168,6 +167,13 @@ module.exports = {
             output: {
               name: 'CarbonCustomElements',
               file: path.join(config.destDir, moduleName + suffix),
+              globals: {
+                classnames: 'classnames',
+                'lit-element': 'LitElement',
+                'lit-html': 'LitHtml',
+                'lit-html/directives/if-defined': 'ifDefined',
+                'lodash-es/findLast': 'findLast',
+              },
             },
             sourceMap: true,
           })

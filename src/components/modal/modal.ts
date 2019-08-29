@@ -1,5 +1,5 @@
 import settings from 'carbon-components/es/globals/js/settings';
-import findLast from 'lodash.findlast';
+import findLast from 'lodash-es/findLast';
 import classnames from 'classnames';
 import { html, property, customElement, LitElement } from 'lit-element';
 import HostListener from '../../globals/decorators/host-listener';

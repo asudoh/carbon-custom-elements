@@ -1,4 +1,4 @@
-import pickBy from 'lodash.pickby';
+import { pickBy } from 'lodash-es';
 
 /**
  * @param props A key-value pair of properties to bind to a Vue component.
