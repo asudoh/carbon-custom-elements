@@ -50,7 +50,9 @@ class BXOverflowMenuBody extends BXFloatingMenu {
 
   render() {
     return html`
+      <a class="${prefix}--visually-hidden" href="javascript:void 0" role="navigation"></a>
       <slot></slot>
+      <a class="${prefix}--visually-hidden" href="javascript:void 0" role="navigation"></a>
     `;
   }
 

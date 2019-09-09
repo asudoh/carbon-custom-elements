@@ -33,13 +33,45 @@ class BXOverflowMenu extends HostListenerMixin(FocusMixin(LitElement)) implement
   /**
    * Handles `click` event on the trigger button.
    */
-  @HostListener('click')
+  @HostListener('shadowRoot:click')
   // @ts-ignore: The decorator refers to this method but TS thinks this method is not referred to
-  private _handleClickTrigger = (event: MouseEvent) => {
-    if (event.composedPath().indexOf(this.shadowRoot!) >= 0) {
-      this.open = !this.open;
+  private _handleClickTrigger = () => {
+    this._syncUserInitiatedState((this.open = !this.open));
+  };
+
+  /**
+   * Handles `keydown` event on the trigger button.
+   */
+  @HostListener('keydown')
+  // @ts-ignore: The decorator refers to this method but TS thinks this method is not referred to
+  private _handleKeydownTrigger = ({ key, target }: KeyboardEvent) => {
+    if (target === this && (key === ' ' || key === 'Enter')) {
+      this._syncUserInitiatedState((this.open = !this.open));
     }
   };
+
+  private _syncUserInitiatedState(open: boolean) {
+    this._syncState(open);
+    const { _menuBody: menuBody } = this;
+    if (menuBody) {
+      menuBody.syncUserInitiatedState(this.open);
+    }
+  }
+
+  /**
+   * Ensures the menu body and `aria-expanded` attribute gets in sync with the given open state.
+   * @param open The new open state.
+   */
+  private _syncState(open: boolean) {
+    if (open && !this._menuBody) {
+      this._menuBody = find(this.childNodes, elem => (elem.constructor as typeof BXFloatingMenu).FLOATING_MENU);
+    }
+    const { _menuBody: menuBody } = this;
+    if (menuBody) {
+      menuBody.open = open;
+      this.setAttribute('aria-expanded', String(Boolean(open)));
+    }
+  }
 
   /**
    * `true` if the dropdown should be open. Corresponds to the attribute with the same name.
@@ -68,27 +100,14 @@ class BXOverflowMenu extends HostListenerMixin(FocusMixin(LitElement)) implement
     if (!this.hasAttribute('aria-expanded')) {
       this.setAttribute('aria-expanded', 'false');
     }
-    if (!this.shadowRoot) {
-      this.attachShadow({ mode: 'open' });
-    }
     super.connectedCallback();
-  }
-
-  createRenderRoot() {
-    return this.attachShadow({ mode: 'open', delegatesFocus: true });
   }
 
   updated(changedProperties) {
     if (changedProperties.has('open')) {
-      const { open } = this;
-      if (open && !this._menuBody) {
-        this._menuBody = find(this.childNodes, elem => (elem.constructor as typeof BXFloatingMenu).FLOATING_MENU);
-      }
-      const { _menuBody: menuBody } = this;
-      if (menuBody) {
-        menuBody.open = open;
-        this.setAttribute('aria-expanded', String(Boolean(open)));
-      }
+      // For programmatic change in `open` state,
+      // ensures the state of menu body as well as `aria-expanded` are in sync with the new `open` state
+      this._syncState(this.open);
     }
   }
 
