@@ -14,6 +14,7 @@ import { Locale as FlatpickrLocale } from 'flatpickr/dist/types/locale';
 import { Options as FlatpickrOptions, Plugin as FlatpickrPlugin } from 'flatpickr/dist/types/options';
 import settings from 'carbon-components/es/globals/js/settings';
 import on from 'carbon-components/es/globals/js/misc/on';
+import FormMixin from '../../globals/mixins/form';
 import Handle from '../../globals/internal/handle';
 import { getISODateString, parseISODateString } from './iso-date';
 import BXDatePickerInput from './date-picker-input';
@@ -53,7 +54,7 @@ enum DATE_PICKER_MODE {
  * Date picker.
  */
 @customElement(`${prefix}-date-picker`)
-class BXDatePicker extends LitElement {
+class BXDatePicker extends FormMixin(LitElement) {
   /**
    * The handle for the listener of `${prefix}-date-picker-changed` event.
    */
@@ -236,6 +237,14 @@ class BXDatePicker extends LitElement {
     return this.calendar;
   }
 
+  _handleFormdata(event: Event) {
+    const { formData } = event as any; // TODO: Wait for `FormDataEvent` being available in `lib.dom.d.ts`
+    const { disabled, name, value } = this;
+    if (!disabled) {
+      formData.append(name, value);
+    }
+  }
+
   /**
    * The Flatpickr instance.
    */
@@ -248,6 +257,12 @@ class BXDatePicker extends LitElement {
   dateFormat!: string;
 
   /**
+   * `true` if the date picker should be disabled. Corresponds to the attribute with the same name.
+   */
+  @property({ type: Boolean, reflect: true })
+  disabled = false;
+
+  /**
    * The localization data.
    */
   @property({ attribute: false })
@@ -258,6 +273,12 @@ class BXDatePicker extends LitElement {
    */
   @property({ attribute: 'enabled-range' })
   enabledRange!: string;
+
+  /**
+   * The form name. Corresponds to the attribute with the same name.
+   */
+  @property()
+  name!: string;
 
   /**
    * `true` if the date picker should be open. Corresponds to the attribute with the same name.
@@ -298,6 +319,16 @@ class BXDatePicker extends LitElement {
 
   updated(changedProperties) {
     const { calendar, open } = this;
+    if (changedProperties.has('disabled')) {
+      const { selectorInputFrom, selectorInputTo } = this.constructor as typeof BXDatePicker;
+      const inputFrom = this.querySelector(selectorInputFrom) as BXDatePickerInput;
+      const inputTo = this.querySelector(selectorInputTo) as BXDatePickerInput;
+      [inputFrom, inputTo].forEach(input => {
+        if (input) {
+          input.disabled = this.disabled;
+        }
+      });
+    }
     if (changedProperties.has('enabledRange')) {
       const { enabledRange } = this;
       const dates = enabledRange.split('/').map(item => (!item ? undefined : parseISODateString(item))); // Allows empty start/end

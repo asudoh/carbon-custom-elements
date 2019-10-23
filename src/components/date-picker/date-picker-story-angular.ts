@@ -15,6 +15,7 @@ import './date-picker';
 import './date-picker-input';
 
 const createProps = () => ({
+  disabled: boolean('Disabled (disabled)', false),
   enabledRange: text('Minimum/maximum dates in ISO8601 date format, separated by `/` (enabledRange)', ''),
   open: boolean('Open (open)', false),
   value: text('Value in ISO8601 date format, separated by `/` (value)', ''),
@@ -22,7 +23,6 @@ const createProps = () => ({
 });
 
 const createInputProps = () => ({
-  disabled: boolean('Disabled (disabled in <BXDatePickerInput>)', false),
   hideLabel: boolean('Hide label (hideLabel in <BXDatePickerInput>)', false),
   labelText: text('Label text (labelText in <BXDatePickerInput>)', 'Date Picker label'),
   light: boolean('Light variant (light in <BXDatePickerInput>)', false),
@@ -34,9 +34,8 @@ storiesOf('Date picker', module)
   .addDecorator(withKnobs)
   .add('Default', () => ({
     template: `
-      <bx-date-picker [open]="open">
+      <bx-date-picker [disabled]="disabled" [open]="open">
         <bx-date-picker-input
-          [disabled]="disabled"
           [hideLabel]="hideLabel"
           [labelText]="labelText"
           [light]="light"
@@ -53,13 +52,13 @@ storiesOf('Date picker', module)
   .add('Single with calendar', () => ({
     template: `
       <bx-date-picker
+        [disabled]="disabled"
         [enabledRange]="enabledRange"
         [open]="open"
         [value]="value"
         (bx-date-picker-changed)="onAfterChanged($event)"
       >
         <bx-date-picker-input
-          [disabled]="disabled"
           [hideLabel]="hideLabel"
           kind="single"
           [labelText]="labelText"
@@ -78,13 +77,13 @@ storiesOf('Date picker', module)
   .add('Range with calendar', () => ({
     template: `
       <bx-date-picker
+        [disabled]="disabled"
         [enabledRange]="enabledRange"
         [open]="open"
         [value]="value"
         (bx-date-picker-changed)="onAfterChanged($event)"
       >
         <bx-date-picker-input
-          [disabled]="disabled"
           [hideLabel]="hideLabel"
           kind="from"
           [labelText]="labelText"
@@ -94,7 +93,6 @@ storiesOf('Date picker', module)
         >
         </bx-date-picker-input>
         <bx-date-picker-input
-          [disabled]="disabled"
           [hideLabel]="hideLabel"
           kind="to"
           [labelText]="labelText"
