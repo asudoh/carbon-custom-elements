@@ -41,6 +41,7 @@ gulp.task('lint:license:src', lint.license.src);
 gulp.task('lint:license:dist', lint.license.dist);
 gulp.task('lint:license', gulp.parallel(gulp.task('lint:license:src'), gulp.task('lint:license:dist')));
 
+gulp.task('test:a11y', test.a11y);
 gulp.task('test:unit', test.unit);
 gulp.task('test', gulp.task('test:unit'));
 
