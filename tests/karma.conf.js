@@ -12,6 +12,7 @@
 /* eslint-disable global-require */
 
 const path = require('path');
+const webpack = require('webpack');
 
 function normalizeBrowser(browser) {
   return (
@@ -162,6 +163,11 @@ module.exports = function setupKarma(config) {
           },
         ],
       },
+      plugins: [
+        new webpack.NormalModuleReplacementPlugin(/resize-observer-polyfill/, resource => {
+          resource.request = path.resolve(__dirname, 'mocks/resize-observer-polyfill.ts');
+        }),
+      ],
     },
 
     webpackMiddleware: {
