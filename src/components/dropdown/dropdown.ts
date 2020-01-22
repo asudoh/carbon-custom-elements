@@ -469,14 +469,6 @@ class BXDropdown extends HostListenerMixin(FocusMixin(LitElement)) {
   updated(changedProperties) {
     const { helperText, type } = this;
     const inline = type === DROPDOWN_TYPE.INLINE;
-    const { selectorItem } = this.constructor as typeof BXDropdown;
-    if (changedProperties.has('disabled')) {
-      const { disabled } = this;
-      // Propagate `disabled` attribute to descendants until `:host-context()` gets supported in all major browsers
-      forEach(this.querySelectorAll(selectorItem), elem => {
-        (elem as BXDropdownItem).disabled = disabled;
-      });
-    }
     if ((changedProperties.has('helperText') || changedProperties.has('type')) && helperText && inline) {
       // eslint-disable-next-line no-console
       console.warn('Found `helperText` property/attribute usage in inline mode, that is not supported, at:', this);

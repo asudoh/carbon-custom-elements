@@ -99,11 +99,6 @@ class BXTableRow extends FocusMixin(LitElement) {
   }
 
   connectedCallback() {
-    const table = this.closest((this.constructor as typeof BXTableRow).selectorTable);
-    if (table) {
-      // Propagate `size` attribute from `<bx-table>` until `:host-context()` gets supported in all major browsers
-      this.setAttribute('size', table.getAttribute('size')!);
-    }
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'row');
     }
@@ -154,11 +149,6 @@ class BXTableRow extends FocusMixin(LitElement) {
   static get eventBeforeChangeSelection() {
     return `${prefix}-table-row-change-selection`;
   }
-
-  /**
-   * The CSS selector to find the table.
-   */
-  static selectorTable = `${prefix}-table`;
 
   static styles = styles;
 }

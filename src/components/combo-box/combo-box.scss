@@ -34,6 +34,10 @@ $css--plex: true !default;
   }
 }
 
+:host(#{$prefix}-combo-box[disabled]) {
+  --#{$prefix}-ce-internal--list-box-item--color: #{$disabled-02};
+}
+
 :host(#{$prefix}-combo-box[type='inline']) {
   @extend .#{$prefix}--list-box__wrapper--inline;
 }
@@ -42,11 +46,11 @@ $css--plex: true !default;
   @extend .#{$prefix}--list-box__menu-item;
 
   display: block;
-}
+  color: var(--#{$prefix}-ce-internal--list-box-item--color, $text-02);
 
-:host(#{$prefix}-combo-box-item[disabled]) .#{$prefix}--list-box__menu-item__option {
-  color: $disabled-02;
-  text-decoration: none;
+  .#{$prefix}--list-box__menu-item__option {
+    color: inherit;
+  }
 }
 
 :host(#{$prefix}-combo-box-item[highlighted]) {

@@ -51,7 +51,7 @@
 //
 
 :host(#{$prefix}-table-head) ::slotted(#{$prefix}-table-header-row) {
-  height: $layout-04;
+  height: var(--#{$prefix}-ce-internal--table-row--height, $layout-04);
   display: table-row;
 }
 
@@ -95,7 +95,7 @@
 
 :host(#{$prefix}-table-body) ::slotted(#{$prefix}-table-row) {
   border: none;
-  height: $layout-04;
+  height: var(--#{$prefix}-ce-internal--table-row--height, $layout-04);
   width: 100%;
   display: table-row;
   outline: none;
@@ -112,8 +112,10 @@
     color: $text-02;
     border-top: 1px solid $ui-01;
     border-bottom: 1px solid $ui-03;
-    padding: rem(14px) $spacing-04;
-    padding-bottom: rem(13px);
+    padding-left: $spacing-04;
+    padding-top: var(--#{$prefix}-ce-internal--table-cell--padding-top, rem(14px));
+    padding-right: $spacing-04;
+    padding-bottom: var(--#{$prefix}-ce-internal--table-cell--padding-bottom, rem(13px));
     vertical-align: top;
   }
 

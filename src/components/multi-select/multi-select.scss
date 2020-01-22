@@ -31,6 +31,11 @@ $css--plex: true !default;
   }
 }
 
+:host(#{$prefix}-multi-select[disabled]) {
+  --#{$prefix}-ce-internal--list-box-item--color: #{$disabled-02};
+  --#{$prefix}-ce-internal--multi-select--checkbox-border-color: #{$disabled-02};
+}
+
 :host(#{$prefix}-multi-select[type='inline']) {
   @extend .#{$prefix}--list-box__wrapper--inline;
 }
@@ -38,12 +43,15 @@ $css--plex: true !default;
 :host(#{$prefix}-multi-select-item) {
   @extend .#{$prefix}--list-box__menu-item;
   display: block;
+  color: var(--#{$prefix}-ce-internal--list-box-item--color, $text-02);
 
   .#{$prefix}--checkbox:checked ~ .#{$prefix}--checkbox-label-text {
     color: $text-01;
   }
 
   .#{$prefix}--list-box__menu-item__option {
+    color: inherit;
+
     .#{$prefix}--checkbox-wrapper {
       width: 100%;
       height: 100%;
@@ -51,16 +59,15 @@ $css--plex: true !default;
       align-items: center;
     }
 
+    .#{$prefix}--checkbox-label::before {
+      border-color: var(--#{$prefix}-ce-internal--multi-select--checkbox-border-color, $ui-05);
+    }
+
     > .#{$prefix}--form-item {
       margin: 0;
       flex-direction: row;
     }
   }
-}
-
-:host(#{$prefix}-multi-select-item[disabled]) {
-  color: $disabled-02;
-  text-decoration: none;
 }
 
 :host(#{$prefix}-multi-select-item[highlighted]) {

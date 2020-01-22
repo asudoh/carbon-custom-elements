@@ -31,6 +31,10 @@ $css--plex: true !default;
   }
 }
 
+:host(#{$prefix}-dropdown[disabled]) {
+  --#{$prefix}-ce-internal--list-box-item--color: #{$disabled-02};
+}
+
 :host(#{$prefix}-dropdown[type='inline']) {
   @extend .#{$prefix}--list-box__wrapper--inline;
 }
@@ -38,11 +42,11 @@ $css--plex: true !default;
 :host(#{$prefix}-dropdown-item) {
   @extend .#{$prefix}--list-box__menu-item;
   display: block;
-}
+  color: var(--#{$prefix}-ce-internal--list-box-item--color, $text-02);
 
-:host(#{$prefix}-dropdown-item[disabled]) .#{$prefix}--list-box__menu-item__option {
-  color: $disabled-02;
-  text-decoration: none;
+  .#{$prefix}--list-box__menu-item__option {
+    color: inherit;
+  }
 }
 
 :host(#{$prefix}-dropdown-item[highlighted]) {

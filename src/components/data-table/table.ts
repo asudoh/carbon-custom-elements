@@ -9,7 +9,6 @@
 
 import settings from 'carbon-components/es/globals/js/settings';
 import { html, property, customElement, LitElement } from 'lit-element';
-import { forEach } from '../../globals/internal/collection-helpers';
 import styles from './data-table.scss';
 
 const { prefix } = settings;
@@ -63,25 +62,11 @@ class BXTable extends LitElement {
     super.connectedCallback();
   }
 
-  updated(changedProperties) {
-    if (changedProperties.has('size')) {
-      // Propagate `size` attribute to descendants until `:host-context()` gets supported in all major browsers
-      forEach(this.querySelectorAll((this.constructor as typeof BXTable).selectorRowsWithHeader), elem => {
-        elem.setAttribute('size', this.size);
-      });
-    }
-  }
-
   render() {
     return html`
       <slot></slot>
     `;
   }
-
-  /**
-   * The CSS selector to find the rows, including header rows.
-   */
-  static selectorRowsWithHeader = `${prefix}-table-header-row,${prefix}-table-row`;
 
   static styles = styles;
 }

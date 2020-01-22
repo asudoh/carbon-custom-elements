@@ -9,48 +9,27 @@
 // "Compact" table size variant
 //
 
-:host(#{$prefix}-table-head) ::slotted(#{$prefix}-table-header-row[size='compact']),
-:host(#{$prefix}-table-body) ::slotted(#{$prefix}-table-row[size='compact']) {
-  height: rem(24px);
-}
-
-:host(#{$prefix}-table-row[size='compact']) {
-  ::slotted(#{$prefix}-table-cell),
-  ::slotted(#{$prefix}-table-cell-skeleton) {
-    padding-top: rem(2px);
-    padding-bottom: rem(2px);
-  }
+:host(#{$prefix}-table[size='compact']) {
+  --#{$prefix}-ce-internal--table-row--height: #{rem(24px)};
+  --#{$prefix}-ce-internal--table-cell--padding-top: #{rem(2px)};
+  --#{$prefix}-ce-internal--table-cell--padding-bottom: #{rem(2px)};
 }
 
 //
 // "Short" table size variant
 //
 
-:host(#{$prefix}-table-head) ::slotted(#{$prefix}-table-header-row[size='short']),
-:host(#{$prefix}-table-body) ::slotted(#{$prefix}-table-row[size='short']) {
-  height: rem(32px);
-}
-
-:host(#{$prefix}-table-row[size='short']) {
-  ::slotted(#{$prefix}-table-cell),
-  ::slotted(#{$prefix}-table-cell-skeleton) {
-    padding-top: rem(7px);
-    padding-bottom: rem(6px);
-  }
+:host(#{$prefix}-table[size='short']) {
+  --#{$prefix}-ce-internal--table-row--height: #{rem(32px)};
+  --#{$prefix}-ce-internal--table-cell--padding-top: #{rem(7px)};
+  --#{$prefix}-ce-internal--table-cell--padding-bottom: #{rem(6px)};
 }
 
 //
 // "Tall" table size variant
 //
 
-:host(#{$prefix}-table-head) ::slotted(#{$prefix}-table-header-row[size='tall']),
-:host(#{$prefix}-table-body) ::slotted(#{$prefix}-table-row[size='tall']) {
-  height: rem(64px);
-}
-
-:host(#{$prefix}-table-row[size='tall']) {
-  ::slotted(#{$prefix}-table-cell),
-  ::slotted(#{$prefix}-table-cell-skeleton) {
-    padding-top: rem(16px);
-  }
+:host(#{$prefix}-table[size='tall']) {
+  --#{$prefix}-ce-internal--table-row--height: #{rem(64px)};
+  --#{$prefix}-ce-internal--table-cell--padding-top: #{rem(16px)};
 }
