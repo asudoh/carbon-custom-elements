@@ -1,0 +1,36 @@
+//
+// Copyright IBM Corp. 2020
+//
+// This source code is licensed under the Apache-2.0 license found in the
+// LICENSE file in the root directory of this source tree.
+//
+
+@import 'carbon-components/scss/globals/scss/css--helpers';
+@import 'carbon-components/scss/globals/scss/vendor/@carbon/elements/scss/themes/mixins';
+
+:root {
+  @include carbon--theme($carbon--theme--white, true);
+}
+
+:root[data-example-carbon-theme='g10'] {
+  @include carbon--theme($carbon--theme--g10, true);
+}
+
+:root[data-example-carbon-theme='g90'] {
+  @include carbon--theme($carbon--theme--g90, true);
+}
+
+:root[data-example-carbon-theme='g100'] {
+  @include carbon--theme($carbon--theme--g100, true);
+}
+
+body {
+  font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  color: var(--cds-text-01, #161616);
+  background-color: var(--cds-ui-background, #ffffff);
+  padding: 1rem;
+}
+
+#app {
+  width: 300px;
+}

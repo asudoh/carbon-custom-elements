@@ -1,0 +1,44 @@
+<!--
+@license
+
+Copyright IBM Corp. 2020
+
+This source code is licensed under the Apache-2.0 license found in the
+LICENSE file in the root directory of this source tree.
+-->
+
+<html>
+  <head>
+    <title>carbon-custom-elements example</title>
+    <meta charset="UTF-8" />
+    <!-- See src/index.scss for the application style -->
+    <style type="text/css">
+      bx-dropdown,
+      bx-dropdown-item {
+        visibility: hidden;
+      }
+
+      bx-dropdown:defined,
+      bx-dropdown-item:defined {
+        visibility: inherit;
+      }
+    </style>
+    <script type="text/javascript" src="src/index.js"></script>
+    <script type="text/javascript">
+      document.addEventListener('bx-dropdown-selected', function(event) {
+        document.documentElement.setAttribute('data-example-carbon-theme', event.target.value);
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Hello World! 👋</h1>
+    <div id="app">
+      <bx-dropdown trigger-content="Select an item">
+        <bx-dropdown-item value="white">White</bx-dropdown-item>
+        <bx-dropdown-item value="g10">Gray 10</bx-dropdown-item>
+        <bx-dropdown-item value="g90">Gray 90</bx-dropdown-item>
+        <bx-dropdown-item value="g100">Gray 100</bx-dropdown-item>
+      </bx-dropdown>
+    </div>
+  </body>
+</html>
