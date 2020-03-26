@@ -72,6 +72,11 @@ class BXSlider extends HostListenerMixin(FormMixin(FocusMixin(LitElement))) {
   private _stepRatio = '4';
 
   /**
+   * The internal value of `value` property.
+   */
+  private _value = '50';
+
+  /**
    * The handle for the listener of `${prefix}-slider-input` event.
    */
   private _hChangeInput: Handle | null = null;
@@ -93,13 +98,14 @@ class BXSlider extends HostListenerMixin(FormMixin(FocusMixin(LitElement))) {
   private get _rate() {
     const { max, min, value } = this;
     // Copes with out-of-range value coming programmatically or from `<bx-slider-input>`
-    return Math.min(Number(max), Math.max(Number(min), value)) / (Number(max) - Number(min));
+    return Math.min(Number(max), Math.max(Number(min), Number(value))) / (Number(max) - Number(min));
   }
 
   private set _rate(rate: number) {
     const { max, min, step } = this;
-    this.value =
-      Number(min) + Math.round(((Number(max) - Number(min)) * Math.min(1, Math.max(0, rate))) / Number(step)) * Number(step);
+    this.value = String(
+      Number(min) + Math.round(((Number(max) - Number(min)) * Math.min(1, Math.max(0, rate))) / Number(step)) * Number(step)
+    );
   }
 
   /**
@@ -135,8 +141,9 @@ class BXSlider extends HostListenerMixin(FormMixin(FocusMixin(LitElement))) {
   private _handleKeydownThumb({ key, shiftKey }: KeyboardEvent) {
     if (!this.disabled) {
       if (key in THUMB_DIRECTION) {
-        const { max, min, step, stepRatio } = this;
-        this.value += (!shiftKey ? Number(step) : (Number(max) - Number(min)) / Number(stepRatio)) * THUMB_DIRECTION[key];
+        const { max, min, step, stepRatio, value } = this;
+        const diff = (!shiftKey ? Number(step) : (Number(max) - Number(min)) / Number(stepRatio)) * THUMB_DIRECTION[key];
+        this.value = String(Math.min(Number(max), Math.max(Number(min), Number(value) + diff)));
         this.dispatchEvent(
           new CustomEvent((this.constructor as typeof BXSlider).eventChange, {
             bubbles: true,
@@ -348,7 +355,15 @@ class BXSlider extends HostListenerMixin(FormMixin(FocusMixin(LitElement))) {
    * The value.
    */
   @property({ type: Number })
-  value = 50;
+  get value() {
+    return this._value.toString();
+  }
+
+  set value(value) {
+    const { max, min, step, value: oldValue } = this;
+    this._value = String(Math.min(Number(max), Math.max(Number(min), Math.round(Number(value) / Number(step)) * Number(step))));
+    this.requestUpdate('value', oldValue);
+  }
 
   createRenderRoot() {
     return this.attachShadow({ mode: 'open', delegatesFocus: true });
@@ -356,6 +371,13 @@ class BXSlider extends HostListenerMixin(FormMixin(FocusMixin(LitElement))) {
 
   connectedCallback() {
     super.connectedCallback();
+    // Propagates the initial property values
+    const input = this.querySelector((this.constructor as typeof BXSlider).selectorInput) as BXSliderInput;
+    ['max', 'min', 'step', 'value'].forEach(name => {
+      if (this[name] != null) {
+        input[name] = this[name];
+      }
+    });
     if (!this._throttledHandleMousemoveImpl) {
       this._throttledHandleMousemoveImpl = throttle(this._handleMousemoveImpl, 10);
     }
@@ -389,7 +411,7 @@ class BXSlider extends HostListenerMixin(FormMixin(FocusMixin(LitElement))) {
       }
     }
     if (input) {
-      ['max', 'min', 'value'].forEach(name => {
+      ['max', 'min', 'step', 'value'].forEach(name => {
         if (changedProperties.has(name)) {
           input[name] = this[name];
         }
