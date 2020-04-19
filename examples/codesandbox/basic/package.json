@@ -7,7 +7,8 @@
   "main": "index.html",
   "scripts": {
     "start": "parcel index.html --open",
-    "build": "parcel build index.html"
+    "build": "parcel build index.html",
+    "postinstall": "sh ./postinstall.sh"
   },
   "dependencies": {
     "carbon-components": "~10.10.0",
@@ -17,8 +18,15 @@
     "lodash-es": "^4.17.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.0",
     "@babel/core": "^7.8.0",
+    "@babel/helper-module-transforms": "^7.9.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.9.0",
     "@types/lodash-es": "^4.17.0",
     "parcel-bundler": "^1.10.0"
+  },
+  "resolutions": {
+    "@babel/helper-module-transforms": "^7.9.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.9.0"
   }
 }
