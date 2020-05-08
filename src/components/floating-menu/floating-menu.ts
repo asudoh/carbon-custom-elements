@@ -236,6 +236,10 @@ abstract class BXFloatingMenu extends HostListenerMixin(FocusMixin(LitElement)) 
       throw new Error('Floating menu container must not have `position:static`.');
     }
 
+    if (container.scrollTop > 0 || container.scrollLeft > 0) {
+      throw new Error('Floating menu container must not be scrollable.');
+    }
+
     const { alignment, alignmentDirection, direction } = this;
     if (Object.values(FLOATING_MENU_ALIGNMENT).indexOf(alignment) < 0) {
       throw new Error(`Wrong menu alignment: ${alignment}`);
