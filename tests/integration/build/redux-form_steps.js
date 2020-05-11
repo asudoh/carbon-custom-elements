@@ -56,6 +56,7 @@ describe('Redux-form example', () => {
   });
 
   afterAll(async () => {
+    await browser.close();
     await teardownDevServer();
   });
 });

@@ -10,7 +10,8 @@
     "afterEach": true,
     "it": true,
     "expect": true,
-    "page": true
+    "page": true,
+    "browser": true
   },
   "rules": {
     "no-new": 0,

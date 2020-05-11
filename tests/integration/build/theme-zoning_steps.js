@@ -43,6 +43,7 @@ describe('Custom style example with inherited component class', () => {
   });
 
   afterAll(async () => {
+    await browser.close();
     await teardownDevServer();
   });
 });

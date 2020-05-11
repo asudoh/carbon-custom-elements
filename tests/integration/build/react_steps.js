@@ -46,6 +46,7 @@ describe('React example', () => {
   });
 
   afterAll(async () => {
+    await browser.close();
     await teardownDevServer();
   });
 });

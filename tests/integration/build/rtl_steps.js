@@ -50,6 +50,7 @@ describe('RTL example', () => {
   });
 
   afterAll(async () => {
+    await browser.close();
     await teardownDevServer();
   });
 });

@@ -46,6 +46,7 @@ describe('Angular example', () => {
   });
 
   afterAll(async () => {
+    await browser.close();
     await teardownDevServer();
   });
 });
