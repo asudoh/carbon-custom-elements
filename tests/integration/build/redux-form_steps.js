@@ -16,8 +16,8 @@ const PORT = 3001;
 
 describe('Redux-form example', () => {
   beforeAll(async () => {
-    const dist = path.resolve(__dirname, '../../es');
-    const src = path.resolve(__dirname, '../../examples/codesandbox/form/redux-form');
+    const dist = path.resolve(__dirname, '../../../es');
+    const src = path.resolve(__dirname, '../../../examples/codesandbox/form/redux-form');
     const tmpDir = process.env.CCE_EXAMPLE_TMPDIR;
     await setupDevServer({
       command: [
@@ -35,24 +35,24 @@ describe('Redux-form example', () => {
       const message = dialog.message();
       await dialog.dismiss();
       await page.evaluate(content => {
-        document.body.insertAdjacentHTML('beforeend', `<div>${content}</div>`);
+        document.body.insertAdjacentHTML('beforeend', `<div id="status-message">${content}</div>`);
       }, message);
     });
     await page.goto(`http://localhost:${PORT}`);
   }, Number(process.env.LAUNCH_TIMEOUT));
 
   it('should detect an invalid data', async () => {
-    await expect(page).toFill('bx-input[name="username"]', 'john');
-    await expect(page).toFill('bx-input[name="password"]', 'foo');
-    await expect(page).toClick('bx-btn[kind="primary"]');
-    await expect(page).toMatchElement('bx-input[name="password"][invalid]', { timeout: 2000 });
+    await page.fill('bx-input[name="username"] input', 'john');
+    await page.fill('bx-input[name="password"] input', 'foo');
+    await page.click('bx-btn[kind="primary"]');
+    await expect(page).toHaveSelector('bx-input[name="password"][invalid]', { timeout: 2000 });
   });
 
   it('should submit the data once all data is valid', async () => {
-    await expect(page).toFill('bx-input[name="username"]', 'john');
-    await expect(page).toFill('bx-input[name="password"]', 'redux-form');
-    await expect(page).toClick('bx-btn[kind="primary"]');
-    await expect(page).toMatch('You submitted:', { timeout: 2000 });
+    await page.fill('bx-input[name="username"] input', 'john');
+    await page.fill('bx-input[name="password"] input', 'redux-form');
+    await page.click('bx-btn[kind="primary"]');
+    await expect(page).toHaveText('#status-message', 'You submitted:');
   });
 
   afterAll(async () => {

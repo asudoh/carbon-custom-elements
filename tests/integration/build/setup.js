@@ -10,7 +10,7 @@
 'use strict';
 
 const { promisify } = require('util');
-const { setup } = require('jest-environment-puppeteer');
+const setup = require('jest-playwright-preset/setup');
 const { mkdir, track } = require('temp');
 
 module.exports = async config => {

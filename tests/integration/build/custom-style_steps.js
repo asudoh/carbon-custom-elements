@@ -16,8 +16,8 @@ const PORT = 1236;
 
 describe('Custom style example with inherited component class', () => {
   beforeAll(async () => {
-    const dist = path.resolve(__dirname, '../../es');
-    const src = path.resolve(__dirname, '../../examples/codesandbox/styling/custom-style');
+    const dist = path.resolve(__dirname, '../../../es');
+    const src = path.resolve(__dirname, '../../../examples/codesandbox/styling/custom-style');
     const tmpDir = process.env.CCE_EXAMPLE_TMPDIR;
     await setupDevServer({
       command: [
@@ -35,14 +35,14 @@ describe('Custom style example with inherited component class', () => {
   }, Number(process.env.LAUNCH_TIMEOUT));
 
   it('should show a title', async () => {
-    await expect(page).toMatch('Hello World!');
+    await expect(page).toHaveText('Hello World!');
   });
 
   it('should have dropdown with custom color', async () => {
     const backgroundColorValue = await page.evaluate(dropdown => {
       const listBox = dropdown.shadowRoot.querySelector('.bx--list-box');
       return listBox.ownerDocument.defaultView.getComputedStyle(listBox).getPropertyValue('background-color');
-    }, await expect(page).toMatchElement('my-dropdown'));
+    }, await page.$('my-dropdown'));
     expect(backgroundColorValue).toEqual(expect.stringMatching(/rgb\(\s*255,\s*255,\s*255\s*\)/));
   });
 

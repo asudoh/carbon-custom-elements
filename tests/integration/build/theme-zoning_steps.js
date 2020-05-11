@@ -16,8 +16,8 @@ const PORT = 1237;
 
 describe('Custom style example with inherited component class', () => {
   beforeAll(async () => {
-    const dist = path.resolve(__dirname, '../../es');
-    const src = path.resolve(__dirname, '../../examples/codesandbox/styling/theme-zoning');
+    const dist = path.resolve(__dirname, '../../../es');
+    const src = path.resolve(__dirname, '../../../examples/codesandbox/styling/theme-zoning');
     const tmpDir = process.env.CCE_EXAMPLE_TMPDIR;
     await setupDevServer({
       command: [
@@ -38,7 +38,7 @@ describe('Custom style example with inherited component class', () => {
     const backgroundColorValue = await page.evaluate(dropdown => {
       const listBox = dropdown.shadowRoot.querySelector('.bx--btn');
       return listBox.ownerDocument.defaultView.getComputedStyle(listBox).getPropertyValue('background-color');
-    }, await expect(page).toMatchElement('footer bx-btn'));
+    }, await page.$('footer bx-btn'));
     expect(backgroundColorValue).toEqual(expect.stringMatching(/rgb\(\s*111,\s*111,\s*111\s*\)/));
   });
 

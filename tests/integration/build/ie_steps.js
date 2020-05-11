@@ -12,21 +12,21 @@
 const path = require('path');
 const { setup: setupDevServer, teardown: teardownDevServer } = require('jest-dev-server');
 
-const PORT = 3000;
+const PORT = 8081;
 
-describe('React example', () => {
+describe('IE example', () => {
   beforeAll(async () => {
-    const dist = path.resolve(__dirname, '../../es');
-    const src = path.resolve(__dirname, '../../examples/codesandbox/react');
+    const dist = path.resolve(__dirname, '../../../es');
+    const src = path.resolve(__dirname, '../../../examples/codesandbox/ie');
     const tmpDir = process.env.CCE_EXAMPLE_TMPDIR;
     await setupDevServer({
       command: [
         `cp -r ${src} ${tmpDir}`,
-        `cd ${tmpDir}/react`,
+        `cd ${tmpDir}/ie`,
         'yarn install',
         'rm -Rf node_modules/carbon-custom-elements/es',
         `cp -r ${dist} node_modules/carbon-custom-elements`,
-        `BROWSER=none PORT=${PORT} yarn start`,
+        `yarn webpack-dev-server --mode=development --open=false --port=${PORT}`,
       ].join(' && '),
       launchTimeout: Number(process.env.LAUNCH_TIMEOUT),
       port: PORT,
@@ -35,14 +35,14 @@ describe('React example', () => {
   }, Number(process.env.LAUNCH_TIMEOUT));
 
   it('should show a title', async () => {
-    await expect(page).toMatch('Hello World!');
+    await expect(page).toHaveText('Hello World!');
   });
 
   it('should have dropdown interactive', async () => {
-    await expect(page).toClick('bx-dropdown');
-    await expect(page).toMatchElement('bx-dropdown[open]');
-    await expect(page).toClick('bx-dropdown');
-    await expect(page).toMatchElement('bx-dropdown:not([open])');
+    await page.click('bx-dropdown');
+    await expect(page).toHaveSelector('bx-dropdown[open]');
+    await page.click('bx-dropdown');
+    await expect(page).toHaveSelector('bx-dropdown:not([open])');
   });
 
   afterAll(async () => {

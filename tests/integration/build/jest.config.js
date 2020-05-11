@@ -9,12 +9,12 @@
 
 'use strict';
 
-process.env.JEST_PUPPETEER_CONFIG = `${__dirname}/jest-puppeteer.config.js`;
+process.env.JEST_PLAYWRIGHT_CONFIG = `${__dirname}/jest-playwright.config.js`;
 
 module.exports = {
   globalSetup: './setup',
-  globalTeardown: 'jest-environment-puppeteer/teardown',
-  setupFilesAfterEnv: ['expect-puppeteer'],
-  testEnvironment: 'jest-environment-puppeteer',
+  globalTeardown: 'jest-playwright-preset/teardown',
+  setupFilesAfterEnv: ['expect-playwright'],
+  testEnvironment: 'jest-playwright-preset',
   testRegex: '.*_steps\\.js$',
 };

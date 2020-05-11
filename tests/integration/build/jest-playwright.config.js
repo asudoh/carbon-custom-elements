@@ -10,7 +10,7 @@
 'use strict';
 
 module.exports = {
-  launch: {
+  launchBrowserApp: {
     headless: process.env.CI !== 'false',
   },
 };

@@ -12,37 +12,41 @@
 const path = require('path');
 const { setup: setupDevServer, teardown: teardownDevServer } = require('jest-dev-server');
 
-const PORT = 1234;
+const PORT = 8083;
 
-describe('Basic example', () => {
+describe('RTL example', () => {
   beforeAll(async () => {
-    const dist = path.resolve(__dirname, '../../es');
-    const src = path.resolve(__dirname, '../../examples/codesandbox/basic');
+    const dist = path.resolve(__dirname, '../../../es');
+    const src = path.resolve(__dirname, '../../../examples/codesandbox/rtl');
     const tmpDir = process.env.CCE_EXAMPLE_TMPDIR;
     await setupDevServer({
       command: [
         `cp -r ${src} ${tmpDir}`,
-        `cd ${tmpDir}/basic`,
+        `cd ${tmpDir}/rtl`,
         'yarn install',
         'rm -Rf node_modules/carbon-custom-elements/es',
         `cp -r ${dist} node_modules/carbon-custom-elements`,
-        `yarn parcel --port ${PORT} index.html`,
+        `yarn webpack-dev-server --mode=development --open=false --port=${PORT}`,
       ].join(' && '),
       launchTimeout: Number(process.env.LAUNCH_TIMEOUT),
       port: PORT,
+    });
+    await page.setExtraHTTPHeaders({
+      'Accept-Language': 'ar',
     });
     await page.goto(`http://localhost:${PORT}`);
   }, Number(process.env.LAUNCH_TIMEOUT));
 
   it('should show a title', async () => {
-    await expect(page).toMatch('Hello World!');
+    await expect(page).toHaveText('Hello World!');
   });
 
-  it('should have dropdown interactive', async () => {
-    await expect(page).toClick('bx-dropdown');
-    await expect(page).toMatchElement('bx-dropdown[open]');
-    await expect(page).toClick('bx-dropdown');
-    await expect(page).toMatchElement('bx-dropdown:not([open])');
+  it('should have RTL style applied', async () => {
+    const transformValue = await page.evaluate(slider => {
+      const filledTrackContainer = slider.shadowRoot.querySelector('.bx-ce--slider__filled-track-container');
+      return filledTrackContainer.ownerDocument.defaultView.getComputedStyle(filledTrackContainer).getPropertyValue('transform');
+    }, await page.$('bx-slider'));
+    expect(transformValue).toEqual(expect.stringMatching(/matrix\( *-1/));
   });
 
   afterAll(async () => {
