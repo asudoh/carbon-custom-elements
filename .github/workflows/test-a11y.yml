@@ -1,0 +1,28 @@
+name: test-a11y
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - master
+jobs:
+  karma-ibma:
+    name: a11y test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Install dependencies
+        run: yarn install
+      - name: Install karma-ibma
+        run: yarn add -D https://able.ibm.com/tools/dist/karma-ibma.tgz --ignore-engines
+      - name: Set up AAT token
+        run: |
+          echo "authToken: ${AAT_TOKEN}" >> .aat.yml
+        env:
+          AAT_TOKEN: ${{ secrets.AAT_TOKEN }}
+      - name: Run the test suite
+        run: yarn gulp test:a11y

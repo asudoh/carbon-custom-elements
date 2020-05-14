@@ -263,3 +263,36 @@ By default Chrome runs in headless mode. You can show Chrome UI by:
 ```
 > CI=false yarn test:integration
 ```
+
+## Running a11y compliance tests
+
+First, (if you haven't done already) set up an auth token for a11y rules, by:
+
+1. Go to https://able.ibm.com/tools/auth
+1. Enter IBM ID/password
+1. Hit Copy Authentication Token button
+1. Run the following command (Mac):
+
+```sh
+> echo "authToken: `pbpaste`" >> .aat.yml
+```
+
+And install the a11y compliance test tool by:
+
+```sh
+> yarn add -D https://able.ibm.com/tools/dist/karma-ibma.tgz --ignore-engines
+```
+
+Then you can test your changes by running our test commands:
+
+```sh
+> gulp test:a11y
+```
+
+If you are very sure that your change affects a specific set of components, you can use `-f` option, like:
+
+```sh
+gulp test:a11y -s tests/a11y/accordion_a11y_spec.ts
+```
+
+The a11y test may report potential issues that should be handled in application-level, not in carbon-custom-elements code. In such case, you can ignore those issues by adding an item to `shouldIssueBeIgnoredForRule` table in [tests/a11y/global-ignore-aat-issues.ts](https://github.com/carbon-design-system/carbon-custom-elements/blob/master/tests/a11y/global-ignore-aat-issues.ts). The table is keyed by something like `wcag20.tech.h59.linkValid` which helps indentifying what RPT rule to ignore. You can specify `true` to the value which ignores all violations of the rule, or a function which takes the DOM element violating the rule and returns `true` if such violation should be ignored.

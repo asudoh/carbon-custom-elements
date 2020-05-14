@@ -28,6 +28,23 @@ const {
 } = cloptions;
 
 module.exports = {
+  a11y(done) {
+    process.env.AAT_VERBOSE = !!verbose;
+    new Server(
+      {
+        configFile: path.resolve(__dirname, '..', testsDir, 'karma-ibma.conf.js'),
+        singleRun: !keepalive,
+        customConfig: {
+          browsers, // We'll massage browser list in `karma.config.js`
+          specs,
+          useExperimentalFeatures,
+          verbose,
+        },
+      },
+      done
+    ).start();
+  },
+
   unit(done) {
     new Server(
       {

@@ -7,5 +7,6 @@ storybook-static
 storybook-static-angular
 storybook-static-react
 storybook-static-vue
+tests/a11y-results
 tests/coverage
 .vscode
