@@ -11,6 +11,7 @@ import settings from 'carbon-components/es/globals/js/settings';
 import { classMap } from 'lit-html/directives/class-map';
 import { html, svg, property, query, customElement, LitElement } from 'lit-element';
 import CheckmarkFilled16 from '@carbon/icons/lib/checkmark--filled/16';
+import { selectorTabbable } from '../../globals/settings';
 import { FORM_ELEMENT_COLOR_SCHEME } from '../../globals/shared-enums';
 import ifNonNull from '../../globals/directives/if-non-null';
 import FocusMixin from '../../globals/mixins/focus';
@@ -68,6 +69,17 @@ class BXSelectableTile extends FocusMixin(LitElement) {
    */
   @property()
   value!: string;
+
+  focus() {
+    // Browser's native `.focus()` with delegates-focus mode focuses on the first programmatic-focusable node,
+    // and `<input tabindex="-1">` programmatic-focusable, whereas we want focus on `<label tabindex="0">`
+    const delegateTarget = this.shadowRoot!.querySelector(selectorTabbable) || this.querySelector(selectorTabbable);
+    if (delegateTarget) {
+      (delegateTarget as HTMLElement).focus();
+    } else {
+      super.focus();
+    }
+  }
 
   createRenderRoot() {
     return this.attachShadow({ mode: 'open', delegatesFocus: true });

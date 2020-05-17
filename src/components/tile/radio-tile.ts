@@ -11,7 +11,7 @@ import settings from 'carbon-components/es/globals/js/settings';
 import { customElement } from 'lit-element';
 import HostListener from '../../globals/decorators/host-listener';
 import HostListenerMixin from '../../globals/mixins/host-listener';
-import RadioGroupManager, { NAVIGATION_DIRECTION } from '../../globals/internal/radio-group-manager';
+import RadioGroupManager, { NAVIGATION_DIRECTION, ManagedRadioButtonDelegate } from '../../globals/internal/radio-group-manager';
 import SelectableTile from './selectable-tile';
 
 const { prefix } = settings;
@@ -27,6 +27,60 @@ const navigationDirectionForKey = {
 };
 
 /**
+ * The interface for `RadioGroupManager` for radio tile.
+ */
+class RadioTileDelegate implements ManagedRadioButtonDelegate {
+  /**
+   * The radio tile to target.
+   */
+  private _tile: BXRadioTile;
+
+  constructor(tile: BXRadioTile) {
+    this._tile = tile;
+  }
+
+  get checked() {
+    return this._tile.selected;
+  }
+
+  set checked(checked) {
+    const { _tile: tile } = this;
+    const { eventChange } = tile.constructor as typeof BXRadioTile; // eslint-disable-line no-use-before-define
+    tile.selected = checked;
+    this.tabIndex = checked ? 0 : -1;
+    tile.dispatchEvent(
+      new CustomEvent(eventChange, {
+        bubbles: true,
+        composed: true,
+        detail: {
+          checked,
+        },
+      })
+    );
+  }
+
+  get tabIndex() {
+    return this._tile.tabIndex;
+  }
+
+  set tabIndex(tabIndex) {
+    this._tile.tabIndex = tabIndex;
+  }
+
+  get name() {
+    return this._tile.name;
+  }
+
+  compareDocumentPosition(other: RadioTileDelegate) {
+    return this._tile.compareDocumentPosition(other._tile);
+  }
+
+  focus() {
+    this._tile.focus();
+  }
+}
+
+/**
  * Single-selectable tile.
  * @element bx-radio-tile
  */
@@ -35,7 +89,12 @@ class BXRadioTile extends HostListenerMixin(SelectableTile) {
   /**
    * The radio group manager associated with the radio button.
    */
-  private _manager!: RadioGroupManager;
+  private _manager: RadioGroupManager | null = null;
+
+  /**
+   * The interface for `RadioGroupManager` for radio button.
+   */
+  private _radioButtonDelegate = new RadioTileDelegate(this);
 
   /**
    * The `type` attribute of the `<input>`.
@@ -43,44 +102,21 @@ class BXRadioTile extends HostListenerMixin(SelectableTile) {
   protected _inputType = 'radio';
 
   /**
-   * Attaches the radio button to the radio group manager.
-   */
-  private _attachManager() {
-    if (!this._manager) {
-      this._manager = RadioGroupManager.get(this.getRootNode({ composed: true }) as Document);
-    }
-    const { name, _inputNode: inputNode, _manager: manager } = this;
-    if (inputNode && name) {
-      manager!.add(inputNode);
-    }
-  }
-
-  /**
-   * Detaches the radio button to the radio group manager.
-   */
-  private _detachManager() {
-    const { _inputNode: inputNode, _manager: manager } = this;
-    if (inputNode && manager) {
-      manager.delete(inputNode);
-    }
-  }
-
-  /**
    * Handles `keydown` event on this element.
    */
   @HostListener('keydown')
   // @ts-ignore: The decorator refers to this method but TS thinks this method is not referred to
   private _handleKeydown = (event: KeyboardEvent) => {
-    const { _inputNode: inputNode } = this;
+    const { _radioButtonDelegate: radioButtonDelegate } = this;
     const manager = this._manager;
-    if (inputNode && manager) {
+    if (radioButtonDelegate && manager) {
       const navigationDirection = navigationDirectionForKey[event.key];
       if (navigationDirection) {
-        manager.select(manager.navigate(inputNode, navigationDirection));
+        manager.select(manager.navigate(radioButtonDelegate, navigationDirection));
         event.preventDefault(); // Prevent default (scrolling) behavior
       }
       if (event.key === ' ' || event.key === 'Enter') {
-        manager.select(inputNode);
+        manager.select(radioButtonDelegate);
       }
     }
   };
@@ -91,31 +127,52 @@ class BXRadioTile extends HostListenerMixin(SelectableTile) {
   protected _handleChange() {
     super._handleChange();
     if (this._manager) {
-      this._manager.select(this._inputNode);
+      this._manager.select(this._radioButtonDelegate);
     }
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this._attachManager();
+    if (!this._manager) {
+      this._manager = RadioGroupManager.get(this.getRootNode({ composed: true }) as Document);
+    }
+    const { name, _radioButtonDelegate: radioButtonDelegate, _manager: manager } = this;
+    if (radioButtonDelegate && name) {
+      manager!.add(this._radioButtonDelegate);
+    }
   }
 
   disconnectedCallback() {
-    this._detachManager();
+    const { _radioButtonDelegate: radioButtonDelegate, _manager: manager } = this;
+    if (radioButtonDelegate && manager) {
+      manager.delete(radioButtonDelegate);
+    }
     super.disconnectedCallback();
   }
 
   shouldUpdate(changedProperties) {
-    if (changedProperties.has('name')) {
-      this._detachManager();
+    const { _manager: manager } = this;
+    if (manager && changedProperties.has('name')) {
+      manager.delete(this._radioButtonDelegate, changedProperties.get('name'));
     }
     return true;
   }
 
   updated(changedProperties) {
+    const { _manager: manager, name } = this;
     if (changedProperties.has('name')) {
-      this._attachManager();
+      if (manager && name) {
+        manager.add(this._radioButtonDelegate);
+      }
+      this.setAttribute('tabindex', !name || !manager || !manager.shouldBeFocusable(this._radioButtonDelegate) ? '-1' : '0');
     }
+  }
+
+  /**
+   * The name of the custom event fired after this radio tile changes its checked state.
+   */
+  static get eventChange() {
+    return `${prefix}-radio-tile-changed`;
   }
 }
 

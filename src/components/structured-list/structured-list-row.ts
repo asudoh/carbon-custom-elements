@@ -46,8 +46,18 @@ class StructuredListRowRadioButtonDelegate implements ManagedRadioButtonDelegate
   }
 
   set checked(checked) {
+    const { eventChange } = this._row.constructor as typeof BXStructuredListRow; // eslint-disable-line no-use-before-define
     this._row.selected = checked;
     this._row.tabIndex = checked ? 0 : -1;
+    this._row.dispatchEvent(
+      new CustomEvent(eventChange, {
+        bubbles: true,
+        composed: true,
+        detail: {
+          checked,
+        },
+      })
+    );
   }
 
   get tabIndex() {
@@ -214,6 +224,13 @@ class BXStructuredListRow extends HostListenerMixin(LitElement) {
     return html`
       <slot></slot>
     `;
+  }
+
+  /**
+   * The name of the custom event fired after this structured list row changes its selected state.
+   */
+  static get eventChange() {
+    return `${prefix}-structured-list-row-selected`;
   }
 
   static styles = styles;
