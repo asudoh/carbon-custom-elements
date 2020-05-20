@@ -184,13 +184,29 @@ describe('bx-tile', function() {
     });
 
     describe('Selection', function() {
-      it('should reflect the selection', async function() {
+      let tiles;
+
+      beforeEach(async function() {
         render(singleSelectableTemplate({ name: 'name-foo' }), document.body);
         await Promise.resolve();
-        const tiles = document.body.querySelectorAll('bx-radio-tile');
+        tiles = document.body.querySelectorAll('bx-radio-tile');
+      });
+
+      it('should reflect the selection', async function() {
         const input1 = tiles[1]!.shadowRoot!.querySelector('input');
         input1!.click();
         expect(Array.prototype.map.call(tiles, item => (item as BXRadioTile).selected)).toEqual([false, true, false]);
+      });
+
+      it('Should navigate by up/down keys', function() {
+        (tiles[0] as HTMLElement).focus();
+        const event = new CustomEvent('keydown', { bubbles: true, composed: true });
+        tiles[0].dispatchEvent(Object.assign(event, { key: 'ArrowDown' }));
+        expect(Array.prototype.map.call(tiles, item => (item as BXRadioTile).selected)).toEqual([false, true, false]);
+        expect(Array.prototype.map.call(tiles, row => row.tabIndex)).toEqual([-1, 0, -1]);
+        tiles[1].dispatchEvent(Object.assign(event, { key: 'ArrowUp' }));
+        expect(Array.prototype.map.call(tiles, item => (item as BXRadioTile).selected)).toEqual([true, false, false]);
+        expect(Array.prototype.map.call(tiles, row => row.tabIndex)).toEqual([0, -1, -1]);
       });
     });
   });
