@@ -2,8 +2,8 @@ name: Deploy carbon-web-components storybook to IBM Cloud
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - 'deploy-test'
 
 jobs:
   deploy:
@@ -21,11 +21,11 @@ jobs:
       - name: Building carbon-web-components storybook
         run: yarn build-storybook
       - name: Deploying carbon-web-components storybook to IBM Cloud
-        uses: carbon-design-system/action-ibmcloud-cf@v1.0.0
+        uses: asudoh/action-ibmcloud-cf@separate-ibmcloud-cf-api-endpoints
         with:
           cloud-api-key: ${{ secrets.CF_TOKEN }}
-          cf-org: carbon-design-system
-          cf-space: production
+          cf-org: asudoh@jp.ibm.com
+          cf-space: dev
           cf-region: us-south
-          cf-app: carbon-web-components
+          cf-app: carbon-web-components-asudoh-test
           cf-manifest: manifest.yml

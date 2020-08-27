@@ -1,7 +1,5 @@
 ---
 applications:
-- name: carbon-web-components
+- name: carbon-web-components-asudoh-test
   memory: 64M
   buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
-routes:
-  - route: web-components.carbondesignsystem.com
