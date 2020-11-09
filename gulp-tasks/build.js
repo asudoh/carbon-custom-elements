@@ -101,6 +101,12 @@ module.exports = {
               done(null, file);
             })
           )
+          .pipe(
+            babel({
+              babelrc: false,
+              plugins: [babelPluginResourceJSPaths],
+            })
+          )
           .pipe(prettier())
           .pipe(header(banner))
           .pipe(gulp.dest(path.resolve(config.jsDestDir, 'icons')))
@@ -127,6 +133,12 @@ module.exports = {
                 '@babel/plugin-proposal-optional-chaining',
                 babelPluginCreateReactCustomElementType,
               ],
+            })
+          )
+          .pipe(
+            babel({
+              babelrc: false,
+              plugins: [babelPluginResourceJSPaths],
             })
           )
           .pipe(prettier())

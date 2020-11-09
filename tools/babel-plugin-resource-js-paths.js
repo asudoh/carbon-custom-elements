@@ -9,8 +9,9 @@
 
 'use strict';
 
-const { dirname, relative, resolve } = require('path');
+const { dirname, extname, relative, resolve } = require('path');
 const replaceExtension = require('replace-ext');
+const { dependencies = {}, peerDependencies = {}, devDependencies = {} } = require('../package.json');
 
 module.exports = function resourceJSPaths(babel) {
   const t = babel.types;
@@ -29,6 +30,31 @@ module.exports = function resourceJSPaths(babel) {
           const iconsDir = relative(dirname(filenameES), resolve(__dirname, '../es/icons'));
           const declaration = t.cloneNode(node);
           declaration.source.value = source.replace(/^@carbon\/icons\/lib/i, iconsDir);
+          path.replaceWith(declaration);
+        } else if (
+          !extname(source) &&
+          !(source in dependencies) &&
+          !(source in peerDependencies) &&
+          !(source in devDependencies)
+        ) {
+          const declaration = t.cloneNode(node);
+          declaration.source.value = `${source}.js`;
+          path.replaceWith(declaration);
+        }
+      },
+
+      ExportDeclaration(path) {
+        const { node } = path;
+        const { value: source } = node.source || {};
+        if (
+          source &&
+          !extname(source) &&
+          !(source in dependencies) &&
+          !(source in peerDependencies) &&
+          !(source in devDependencies)
+        ) {
+          const declaration = t.cloneNode(node);
+          declaration.source.value = `${source}.js`;
           path.replaceWith(declaration);
         }
       },
